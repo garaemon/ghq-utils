@@ -19,8 +19,7 @@ ghq-cd() {
     local repo_count
 
     # Get GHQ_ROOT
-    ghq_root=$(ghq root 2>/dev/null)
-    if [ $? -ne 0 ] || [ -z "$ghq_root" ]; then
+    if ! ghq_root=$(ghq root 2>/dev/null) || [ -z "$ghq_root" ]; then
         echo "Error: Failed to get ghq root" >&2
         return 1
     fi
@@ -32,7 +31,8 @@ ghq-cd() {
     fi
 
     # Count slashes in the target path
-    local slash_count=$(echo "$target_path" | tr -cd '/' | wc -c | tr -d ' ')
+    local slash_count
+    slash_count=$(echo "$target_path" | tr -cd '/' | wc -c | tr -d ' ')
 
     case "$slash_count" in
         0)
@@ -48,7 +48,9 @@ ghq-cd() {
                 return 0
             else
                 echo "Error: Multiple repositories found with name '${target_path}':" >&2
-                echo "$matching_repos" | sed 's/^/  /' >&2
+                while IFS= read -r repo; do
+                    echo "  $repo" >&2
+                done <<< "$matching_repos"
                 return 1
             fi
             ;;
@@ -65,7 +67,9 @@ ghq-cd() {
                 return 0
             else
                 echo "Error: Multiple repositories found:" >&2
-                echo "$matching_repos" | sed 's/^/  /' >&2
+                while IFS= read -r repo; do
+                    echo "  $repo" >&2
+                done <<< "$matching_repos"
                 return 1
             fi
             ;;
@@ -102,11 +106,13 @@ _ghq_cd_get_candidates() {
         candidates+=("$repo")
 
         # Extract account/repository
-        local account_repo=$(echo "$repo" | sed 's|^[^/]*/||')
+        local account_repo
+        account_repo="${repo#*/}"
         candidates+=("$account_repo")
 
         # Extract repository name only
-        local repo_name=$(basename "$repo")
+        local repo_name
+        repo_name=$(basename "$repo")
         candidates+=("$repo_name")
     done <<< "$repos"
 
@@ -118,7 +124,9 @@ _ghq_cd_get_candidates() {
 if [ -n "$ZSH_VERSION" ]; then
     _ghq_cd() {
         local -a candidates
-        candidates=($(_ghq_cd_get_candidates))
+        while IFS= read -r line; do
+            candidates+=("$line")
+        done < <(_ghq_cd_get_candidates)
         _describe 'repository' candidates
     }
     compdef _ghq_cd ghq-cd
@@ -131,7 +139,7 @@ if [ -n "$BASH_VERSION" ]; then
         local candidates
 
         candidates=$(_ghq_cd_get_candidates)
-        COMPREPLY=($(compgen -W "$candidates" -- "$cur"))
+        mapfile -t COMPREPLY < <(compgen -W "$candidates" -- "$cur")
     }
     complete -F _ghq_cd_bash ghq-cd
 fi
