@@ -106,14 +106,10 @@ _ghq_cd_get_candidates() {
         candidates+=("$repo")
 
         # Extract account/repository
-        local account_repo
-        account_repo="${repo#*/}"
-        candidates+=("$account_repo")
+        candidates+=("${repo#*/}")
 
         # Extract repository name only
-        local repo_name
-        repo_name=$(basename "$repo")
-        candidates+=("$repo_name")
+        candidates+=("$(basename "$repo")")
     done <<< "$repos"
 
     # Remove duplicates and print
