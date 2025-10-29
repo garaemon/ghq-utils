@@ -61,3 +61,36 @@ ghq-cd ghq-utils
 ghq-cd garaemon/ghq-utils
 ghq-cd github.com/garaemon/ghq-utils
 ```
+
+## `ghq-pull`
+
+`ghq-pull` automates the process of executing `git pull` across one or more specified repositories without requiring manual directory navigation.
+
+### Synopsis
+
+```shell
+ghq-pull
+ghq-pull [hostname/][account_name/]repository_name
+ghq-pull [hostname/]account_name
+ghq-pull hostname
+ghq-pull --all
+```
+
+### Usage
+
+`ghq-pull` supports several methods for initiating `git pull` operations:
+
+*   **`ghq-pull [<HOSTNAME>/][<ACCOUNT-NAME>/]<REPOSITORY-NAME>`**
+    Pulls a specific repository. If a unique repository matching `<REPOSITORY-NAME>` exists under your `GHQ_ROOT`, `ghq-pull` will execute `git pull` within its directory. To resolve ambiguity when multiple repositories share the same name, you can specify the `<ACCOUNT-NAME>` and optionally the `<HOSTNAME>`.
+
+*   **`ghq-pull [<HOSTNAME>/]<ACCOUNT-NAME>`**
+    Pulls all repositories associated with a given account. If a unique account matching `<ACCOUNT-NAME>` exists under your `GHQ_ROOT`, `ghq-pull` will run `git pull` in all repositories belonging to that account. To resolve ambiguity when multiple accounts share the same name, you can specify the `<HOSTNAME>`.
+
+*   **`ghq-pull <HOSTNAME>`**
+    Pulls all repositories managed under the specified `<HOSTNAME>`. `ghq-pull` will execute `git pull` in every repository found within that host's directory structure.
+
+*   **`ghq-pull --all`**
+    Pulls all repositories located under the `GHQ_ROOT` directory. This command initiates `git pull` in every managed repository.
+
+*   **`ghq-pull` (no arguments)**
+    If executed from within a repository that is part of the `GHQ_ROOT` structure, `ghq-pull` will automatically perform a `git pull` operation for the current repository.
