@@ -369,3 +369,38 @@ EOF
     [ "$status" -eq 1 ]
     [[ "$output" == *"Failed to get ghq root"* ]]
 }
+
+# Test: ghq-pull with trailing slash in account name
+@test "ghq-pull with trailing slash in account name succeeds" {
+    run ghq-pull garaemon/
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"Found 3 repository(ies)"* ]]
+    [[ "$output" == *"github.com/garaemon/ghq-utils"* ]]
+    [[ "$output" == *"github.com/garaemon/dotfiles"* ]]
+    [[ "$output" == *"gitlab.com/garaemon/project1"* ]]
+}
+
+# Test: ghq-pull with trailing slash in account/repository format
+@test "ghq-pull with trailing slash in account/repository format succeeds" {
+    run ghq-pull garaemon/ghq-utils/
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"github.com/garaemon/ghq-utils"* ]]
+    [[ "$output" == *"Summary"* ]]
+}
+
+# Test: ghq-pull with trailing slash in hostname/account format
+@test "ghq-pull with trailing slash in hostname/account format succeeds" {
+    run ghq-pull github.com/garaemon/
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"Found 2 repository(ies)"* ]]
+    [[ "$output" == *"github.com/garaemon/ghq-utils"* ]]
+    [[ "$output" == *"github.com/garaemon/dotfiles"* ]]
+}
+
+# Test: ghq-pull with trailing slash in full path format
+@test "ghq-pull with trailing slash in full path format succeeds" {
+    run ghq-pull github.com/garaemon/ghq-utils/
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"github.com/garaemon/ghq-utils"* ]]
+    [[ "$output" == *"Summary"* ]]
+}

@@ -166,6 +166,9 @@ ghq-pull() {
     local repo_count
     local failed_repos=()
 
+    # Remove trailing slash from target_path if present
+    target_path="${target_path%/}"
+
     # Get GHQ_ROOT
     if ! ghq_root=$(ghq root 2>/dev/null) || [ -z "$ghq_root" ]; then
         echo "Error: Failed to get ghq root" >&2
