@@ -81,13 +81,12 @@ ghq-cd() {
                     repo_part="$target_path"
                 else
                     # Check if this could be account/repo/subdir
-                    local first_two_parts="${target_path%%/*}/${target_path#*/}"
-                    first_two_parts="${first_two_parts%%/*}"
+                    local temp="${target_path#*/}"
+                    local first_two_parts="${target_path%%/*}/${temp%%/*}"
                     matching_repos=$(ghq list | grep "/${first_two_parts}$")
                     if [ -n "$matching_repos" ]; then
                         # This is account/repo/subdir pattern
                         repo_part="$first_two_parts"
-                        local temp="${target_path#*/}"
                         subdir_part="${temp#*/}"
                     else
                         # This might be repo/subdir/subdir pattern
