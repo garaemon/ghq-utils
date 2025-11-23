@@ -268,7 +268,7 @@ _ghq_cd_get_all_candidates() {
                 # Extract the subdirectory part from current input
                 local subdir_input=""
                 if [[ "$cur" == "$input_prefix"/* ]]; then
-                    subdir_input="${cur#${input_prefix}/}"
+                    subdir_input="${cur#"${input_prefix}"/}"
                 fi
 
                 # Split subdir_input into confirmed path and partial input
@@ -332,6 +332,7 @@ _ghq_cd_get_all_candidates() {
 if [ -n "$ZSH_VERSION" ]; then
     _ghq_cd() {
         local -a candidates
+        # shellcheck disable=SC2154
         local cur="${words[CURRENT]}"
 
         while IFS= read -r line; do

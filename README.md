@@ -47,16 +47,20 @@ ghq-cd
 #### Navigate by Repository Name
 
 ```shell
-ghq-cd <REPOSITORY-NAME>
+ghq-cd <REPOSITORY-NAME>[/SUBDIRECTORY]
 ```
 
 Changes the directory to the repository with the given name. This works only when there is exactly
-one repository with this name under your `GHQ_ROOT`.
+one repository with this name under your `GHQ_ROOT`. You can also specify a subdirectory path to
+navigate directly to a specific directory within the repository.
 
-**Example:**
+**Examples:**
 ```shell
 ghq-cd ghq-utils
 # Changes to: ~/ghq/github.com/garaemon/ghq-utils
+
+ghq-cd ghq-utils/.github/workflows
+# Changes to: ~/ghq/github.com/garaemon/ghq-utils/.github/workflows
 ```
 
 **Note:** If multiple repositories share the same name (e.g., `user1/config` and `user2/config`),
@@ -65,32 +69,39 @@ the command will fail with an error. In this case, use the more specific forms b
 #### Navigate by Account and Repository
 
 ```shell
-ghq-cd <ACCOUNT-NAME>/<REPOSITORY-NAME>
+ghq-cd <ACCOUNT-NAME>/<REPOSITORY-NAME>[/SUBDIRECTORY]
 ```
 
 Changes the directory to the specified repository under the given account. This is useful when
-multiple repositories share the same name but belong to different accounts.
+multiple repositories share the same name but belong to different accounts. You can also append a
+subdirectory path.
 
-**Example:**
+**Examples:**
 ```shell
 ghq-cd garaemon/ghq-utils
 # Changes to: ~/ghq/github.com/garaemon/ghq-utils
+
+ghq-cd garaemon/ghq-utils/src
+# Changes to: ~/ghq/github.com/garaemon/ghq-utils/src
 ```
 
 #### Navigate by Full Path
 
 ```shell
-ghq-cd <HOSTNAME>/<ACCOUNT-NAME>/<REPOSITORY-NAME>
+ghq-cd <HOSTNAME>/<ACCOUNT-NAME>/<REPOSITORY-NAME>[/SUBDIRECTORY]
 ```
 
 Provides the most specific path, changing the directory to the repository located under the
 specified hostname and account. This is useful when you have repositories with the same
-account/repository name on different hosts.
+account/repository name on different hosts. Subdirectory paths are also supported.
 
-**Example:**
+**Examples:**
 ```shell
 ghq-cd github.com/garaemon/ghq-utils
 # Changes to: ~/ghq/github.com/garaemon/ghq-utils
+
+ghq-cd github.com/garaemon/ghq-utils/.github
+# Changes to: ~/ghq/github.com/garaemon/ghq-utils/.github
 ```
 
 #### Navigate to GHQ_ROOT
@@ -104,8 +115,32 @@ When run without any arguments, `ghq-cd` changes the current directory to your `
 
 ### Tab Completion
 
-`ghq-cd` supports tab completion for repository paths, making it easy to discover and navigate to
-repositories without typing full names.
+`ghq-cd` supports intelligent tab completion for both repository paths and subdirectories. The
+completion system provides:
+
+- Repository name completion (all three formats: name, account/name, hostname/account/name)
+- Subdirectory completion showing one level at a time for better usability
+- Partial input matching (e.g., typing `ghq-utils/ro` and pressing Tab will complete to
+  `ghq-utils/roles` if that directory exists)
+
+**Examples:**
+```shell
+# Complete repository names
+ghq-cd ghq[Tab]
+# Shows: ghq-utils
+
+# Complete subdirectories (one level at a time)
+ghq-cd ghq-utils/[Tab]
+# Shows: .github, src, docs, etc.
+
+# Partial matching for subdirectories
+ghq-cd ghq-utils/.gi[Tab]
+# Completes to: ghq-utils/.github
+
+# Continue to deeper levels
+ghq-cd ghq-utils/.github/[Tab]
+# Shows: workflows
+```
 
 ### Common Use Cases
 
