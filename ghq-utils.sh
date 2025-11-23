@@ -62,7 +62,14 @@ ghq-cd() {
         2)
             # Could be: hostname/account/repo or account/repo/subdir or repo/subdir/subdir
             # First try hostname/account/repo pattern
-            matching_repos=$(ghq list | while IFS= read -r line; do [ "$line" = "$target_path" ] && echo "$line"; done)
+            matching_repos=""
+            while IFS= read -r line; do
+                if [ "$line" = "$target_path" ]; then
+                    matching_repos="$line"
+                    break
+                fi
+            done < <(ghq list)
+
             if [ -n "$matching_repos" ]; then
                 # This is hostname/account/repo pattern
                 repo_part="$target_path"
@@ -100,7 +107,14 @@ ghq-cd() {
             local third_part="${rest_after_second%%/*}"
             local potential_repo="${first_part}/${second_part}/${third_part}"
 
-            matching_repos=$(ghq list | while IFS= read -r line; do [ "$line" = "$potential_repo" ] && echo "$line"; done)
+            matching_repos=""
+            while IFS= read -r line; do
+                if [ "$line" = "$potential_repo" ]; then
+                    matching_repos="$line"
+                    break
+                fi
+            done < <(ghq list)
+
             if [ -n "$matching_repos" ]; then
                 # This is hostname/account/repo/subdir pattern
                 repo_part="$potential_repo"
