@@ -83,7 +83,14 @@ ghq-cd() {
                     # Check if this could be account/repo/subdir
                     local temp="${target_path#*/}"
                     local first_two_parts="${target_path%%/*}/${temp%%/*}"
-                    matching_repos=$(ghq list | grep "/${first_two_parts}$")
+                    matching_repos=""
+                    while IFS= read -r line; do
+                        if [[ "$line" == */"${first_two_parts}" ]]; then
+                            matching_repos="$line"
+                            break
+                        fi
+                    done < <(ghq list)
+
                     if [ -n "$matching_repos" ]; then
                         # This is account/repo/subdir pattern
                         repo_part="$first_two_parts"
@@ -121,7 +128,14 @@ ghq-cd() {
             else
                 # Try account/repo pattern with subdirectory
                 local first_two_parts="${target_path%%/*}/${rest_after_first%%/*}"
-                matching_repos=$(ghq list | grep "/${first_two_parts}$")
+                matching_repos=""
+                while IFS= read -r line; do
+                    if [[ "$line" == */"${first_two_parts}" ]]; then
+                        matching_repos="$line"
+                        break
+                    fi
+                done < <(ghq list)
+
                 if [ -n "$matching_repos" ]; then
                     repo_part="$first_two_parts"
                     local temp="${target_path#*/}"
