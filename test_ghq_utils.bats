@@ -15,6 +15,11 @@ setup() {
     mkdir -p "${TEST_GHQ_ROOT}/github.com/user1/ghq-utils"
     mkdir -p "${TEST_GHQ_ROOT}/gitlab.com/garaemon/project1"
 
+    # Create subdirectories for testing
+    mkdir -p "${TEST_GHQ_ROOT}/github.com/garaemon/ghq-utils/.github/workflows"
+    mkdir -p "${TEST_GHQ_ROOT}/github.com/garaemon/ghq-utils/src/utils"
+    mkdir -p "${TEST_GHQ_ROOT}/github.com/garaemon/dotfiles/.config/nvim"
+
     # Initialize git repositories for ghq-pull tests with bare repositories as remotes
     mkdir -p "${TEST_GHQ_ROOT}/.remotes/github.com/garaemon/ghq-utils.git"
     mkdir -p "${TEST_GHQ_ROOT}/.remotes/github.com/garaemon/dotfiles.git"
@@ -114,11 +119,32 @@ teardown() {
     [[ "$output" == *"not found"* ]]
 }
 
-# Test: ghq-cd with invalid path format (too many slashes)
-@test "ghq-cd with invalid path format fails" {
-    run ghq-cd github.com/garaemon/ghq-utils/extra
+# Test: ghq-cd with subdirectory in full path format
+@test "ghq-cd with subdirectory in full path format succeeds" {
+    ghq-cd github.com/garaemon/ghq-utils/.github/workflows
+    [ "$?" -eq 0 ]
+    [ "${PWD}" = "${TEST_GHQ_ROOT}/github.com/garaemon/ghq-utils/.github/workflows" ]
+}
+
+# Test: ghq-cd with subdirectory using repository name only
+@test "ghq-cd with subdirectory using repository name only succeeds" {
+    ghq-cd dotfiles/.config/nvim
+    [ "$?" -eq 0 ]
+    [ "${PWD}" = "${TEST_GHQ_ROOT}/github.com/garaemon/dotfiles/.config/nvim" ]
+}
+
+# Test: ghq-cd with subdirectory using account/repository format
+@test "ghq-cd with subdirectory using account/repository format succeeds" {
+    ghq-cd garaemon/ghq-utils/src/utils
+    [ "$?" -eq 0 ]
+    [ "${PWD}" = "${TEST_GHQ_ROOT}/github.com/garaemon/ghq-utils/src/utils" ]
+}
+
+# Test: ghq-cd with non-existent subdirectory fails
+@test "ghq-cd with non-existent subdirectory fails" {
+    run ghq-cd dotfiles/nonexistent
     [ "$status" -eq 1 ]
-    [[ "$output" == *"Invalid path format"* ]]
+    [[ "$output" == *"not found"* ]]
 }
 
 # Test: _ghq_cd_get_candidates generates all completion formats
@@ -277,9 +303,9 @@ teardown() {
     [[ "$output" == *"No repository found"* ]]
 }
 
-# Test: ghq-pull with invalid path format fails
-@test "ghq-pull with invalid path format fails" {
-    run ghq-pull github.com/garaemon/ghq-utils/extra
+# Test: ghq-pull with subdirectory path fails (not supported for ghq-pull)
+@test "ghq-pull with subdirectory path fails" {
+    run ghq-pull github.com/garaemon/ghq-utils/.github/workflows
     [ "$status" -eq 1 ]
     [[ "$output" == *"Invalid path format"* ]]
 }
