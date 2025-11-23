@@ -339,3 +339,39 @@ ghq-pull
 # Update all repositories from a specific organization
 ghq-pull github.com/organization-name
 ```
+
+## Development
+
+### Running Tests
+
+This project uses [BATS](https://github.com/bats-core/bats-core) (Bash Automated Testing System) for testing.
+
+**Prerequisites:**
+- `shellcheck` for linting
+- `bats` for running tests
+
+**Install dependencies:**
+```shell
+# On Ubuntu/Debian
+sudo apt-get install shellcheck bats
+
+# On macOS
+brew install shellcheck bats-core
+```
+
+**Run linter:**
+```shell
+shellcheck ghq-utils.sh
+```
+
+**Run tests:**
+```shell
+bats test_ghq_utils.bats
+```
+
+**Run all checks (linter + tests):**
+```shell
+shellcheck ghq-utils.sh && bats test_ghq_utils.bats
+```
+
+Tests are also automatically run via GitHub Actions CI on every pull request.
