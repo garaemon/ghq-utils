@@ -349,9 +349,10 @@ ghq-pull github.com/organization-name
 ### Usage
 
 ```shell
-ghq-info <REPOSITORY-NAME>
-ghq-info <ACCOUNT-NAME>
-ghq-info <HOSTNAME>
+ghq-info                                # List all repositories
+ghq-info <REPOSITORY-NAME>              # List specific repository
+ghq-info <ACCOUNT-NAME>                 # List all repositories in an account
+ghq-info <HOSTNAME>                     # List all repositories on a host
 ```
 
 **Output format:**

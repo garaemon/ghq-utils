@@ -433,11 +433,14 @@ EOF
 
 # ===== ghq-info tests =====
 
-# Test: ghq-info with no arguments fails
-@test "ghq-info with no arguments fails" {
+# Test: ghq-info with no arguments lists all repos
+@test "ghq-info with no arguments lists all repos" {
     run ghq-info
-    [ "$status" -eq 1 ]
-    [[ "$output" == *"Usage: ghq-info"* ]]
+    [ "$status" -eq 0 ]
+    [[ "$output" =~ garaemon/ghq-utils[[:space:]]+[0-9a-f]+[[:space:]]+(main|master)[[:space:]]+.*/github.com/garaemon/ghq-utils ]]
+    [[ "$output" =~ garaemon/dotfiles[[:space:]]+[0-9a-f]+[[:space:]]+(main|master)[[:space:]]+.*/github.com/garaemon/dotfiles ]]
+    [[ "$output" =~ user1/ghq-utils[[:space:]]+[0-9a-f]+[[:space:]]+(main|master)[[:space:]]+.*/github.com/user1/ghq-utils ]]
+    [[ "$output" =~ garaemon/project1[[:space:]]+[0-9a-f]+[[:space:]]+(main|master)[[:space:]]+.*/gitlab.com/garaemon/project1 ]]
 }
 
 # Test: ghq-info with unique repository name
