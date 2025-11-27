@@ -340,6 +340,43 @@ ghq-pull
 ghq-pull github.com/organization-name
 ```
 
+## `ghq-info`
+
+### Overview
+
+`ghq-info` displays information about repositories, including the account/repository name, current commit hash, current branch, and full path. This is useful for quickly checking the state of your repositories.
+
+### Usage
+
+```shell
+ghq-info <REPOSITORY-NAME>
+ghq-info <ACCOUNT-NAME>
+ghq-info <HOSTNAME>
+```
+
+**Output format:**
+```
+<account>/<repo>  <commit-hash>  <branch>  <full-path>
+```
+The output is automatically aligned for readability.
+
+**Examples:**
+
+```shell
+# Info for a specific repository
+$ ghq-info ghq-utils
+garaemon/ghq-utils  a1b2c3d  main  /home/user/ghq/github.com/garaemon/ghq-utils
+
+# Info for all repositories in an account
+$ ghq-info garaemon
+garaemon/ghq-utils  a1b2c3d  main    /home/user/ghq/github.com/garaemon/ghq-utils
+garaemon/dotfiles   e5f6g7h  master  /home/user/ghq/github.com/garaemon/dotfiles
+```
+
+### Tab Completion
+
+`ghq-info` supports tab completion similar to `ghq-cd` and `ghq-pull`.
+
 ## Development
 
 ### Running Tests

@@ -642,3 +642,168 @@ if [ -n "$BASH_VERSION" ]; then
     }
     complete -F _ghq_pull_bash ghq-pull
 fi
+
+# ghq-info: Show information about repositories
+#
+# Usage:
+#   ghq-info [hostname/][account_name/]repository_name
+#   ghq-info [hostname/]account_name
+#   ghq-info hostname
+#
+# Output format:
+#   account_name/repository_name branch_name full_path
+
+ghq-info() {
+    local target_path="$1"
+    local ghq_root
+    local matching_repos
+    local repo_count
+    local exit_code=0
+
+    # Remove trailing slash from target_path if present
+    target_path="${target_path%/}"
+
+    if [ -z "$target_path" ]; then
+        echo "Usage: ghq-info <repository-name|account-name>" >&2
+        return 1
+    fi
+
+    # Get GHQ_ROOT
+    if ! ghq_root=$(ghq root 2>/dev/null) || [ -z "$ghq_root" ]; then
+        echo "Error: Failed to get ghq root" >&2
+        return 1
+    fi
+
+    # Count slashes in the target path
+    local slash_count
+    slash_count=$(echo "$target_path" | tr -cd '/' | wc -c | tr -d ' ')
+
+    matching_repos=""
+    case "$slash_count" in
+        0)
+            # Could be: repository_name, account_name, or hostname
+            # Try to find matching repositories
+            matching_repos=$(ghq list | grep "/${target_path}$")
+
+            if [ -z "$matching_repos" ]; then
+                # Try as account name or hostname
+                matching_repos=$(ghq list | grep "/${target_path}/")
+            fi
+
+            if [ -z "$matching_repos" ]; then
+                # Try as hostname
+                matching_repos=$(ghq list | grep "^${target_path}/")
+            fi
+            ;;
+        1)
+            # Could be: hostname/account_name or account_name/repository_name
+            # Try account_name/repository_name first
+            matching_repos=$(ghq list | grep "/${target_path}$")
+
+            if [ -z "$matching_repos" ]; then
+                # Try hostname/account_name
+                matching_repos=$(ghq list | grep "^${target_path}/")
+            fi
+            ;;
+        2)
+            # hostname/account_name/repository_name
+            matching_repos=$(ghq list | grep "^${target_path}$")
+            ;;
+        *)
+            echo "Error: Invalid path format '${target_path}'" >&2
+            return 1
+            ;;
+    esac
+
+    if [ -z "$matching_repos" ]; then
+        echo "Error: No repository found matching '${target_path}'" >&2
+        return 1
+    fi
+
+    # Buffers to store data
+    local -a names=()
+    local -a commits=()
+    local -a branches=()
+    local -a paths=()
+
+    # Max widths for alignment
+    local max_name_len=0
+    local max_commit_len=0
+    local max_branch_len=0
+
+    while IFS= read -r repo; do
+        local repo_path="${ghq_root}/${repo}"
+        local branch_name="unknown"
+        local commit_hash="unknown"
+
+        # Determine account/repo part for display
+        # repo string is like "github.com/account/repo"
+        # we want "account/repo"
+        local display_name="${repo#*/}"
+
+        if [ -d "$repo_path" ] && [ -d "${repo_path}/.git" ]; then
+            branch_name=$(cd "$repo_path" && git rev-parse --abbrev-ref HEAD 2>/dev/null)
+            commit_hash=$(cd "$repo_path" && git rev-parse --short HEAD 2>/dev/null)
+            if [ -z "$branch_name" ]; then
+                branch_name="unknown"
+            fi
+            if [ -z "$commit_hash" ]; then
+                commit_hash="unknown"
+            fi
+        else
+            branch_name="not-a-git-repo"
+            commit_hash="--------"
+        fi
+
+        names+=("$display_name")
+        commits+=("$commit_hash")
+        branches+=("$branch_name")
+        paths+=("$repo_path")
+
+        # Update max lengths
+        if [ ${#display_name} -gt $max_name_len ]; then max_name_len=${#display_name}; fi
+        if [ ${#commit_hash} -gt $max_commit_len ]; then max_commit_len=${#commit_hash}; fi
+        if [ ${#branch_name} -gt $max_branch_len ]; then max_branch_len=${#branch_name}; fi
+
+    done <<< "$matching_repos"
+
+    # Print aligned output
+    for ((i=0; i<${#names[@]}; i++)); do
+        printf "%-*s %-*s %-*s %s\n" \
+            "$max_name_len" "${names[$i]}" \
+            "$max_commit_len" "${commits[$i]}" \
+            "$max_branch_len" "${branches[$i]}" \
+            "${paths[$i]}"
+    done
+
+    return 0
+}
+
+# Helper function to generate completion candidates for ghq-info
+_ghq_info_get_candidates() {
+    _ghq_pull_get_candidates | grep -v -- "--all"
+}
+
+# Zsh completion function for ghq-info
+if [ -n "$ZSH_VERSION" ]; then
+    _ghq_info() {
+        local -a candidates
+        while IFS= read -r line; do
+            candidates+=("$line")
+        done < <(_ghq_info_get_candidates)
+        _describe 'repository' candidates
+    }
+    compdef _ghq_info ghq-info
+fi
+
+# Bash completion function for ghq-info
+if [ -n "$BASH_VERSION" ]; then
+    _ghq_info_bash() {
+        local cur="${COMP_WORDS[COMP_CWORD]}"
+        local candidates
+
+        candidates=$(_ghq_info_get_candidates)
+        mapfile -t COMPREPLY < <(compgen -W "$candidates" -- "$cur")
+    }
+    complete -F _ghq_info_bash ghq-info
+fi
