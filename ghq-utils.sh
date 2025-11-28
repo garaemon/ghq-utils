@@ -663,57 +663,86 @@ ghq-info() {
     # Remove trailing slash from target_path if present
     target_path="${target_path%/}"
 
-    if [ -z "$target_path" ]; then
-        echo "Usage: ghq-info <repository-name|account-name>" >&2
-        return 1
-    fi
-
     # Get GHQ_ROOT
     if ! ghq_root=$(ghq root 2>/dev/null) || [ -z "$ghq_root" ]; then
         echo "Error: Failed to get ghq root" >&2
         return 1
     fi
 
-    # Count slashes in the target path
-    local slash_count
-    slash_count=$(echo "$target_path" | tr -cd '/' | wc -c | tr -d ' ')
-
-    matching_repos=""
-    case "$slash_count" in
-        0)
-            # Could be: repository_name, account_name, or hostname
-            # Try to find matching repositories
-            matching_repos=$(ghq list | grep "/${target_path}$")
-
-            if [ -z "$matching_repos" ]; then
-                # Try as account name or hostname
-                matching_repos=$(ghq list | grep "/${target_path}/")
-            fi
-
-            if [ -z "$matching_repos" ]; then
-                # Try as hostname
-                matching_repos=$(ghq list | grep "^${target_path}/")
-            fi
-            ;;
-        1)
-            # Could be: hostname/account_name or account_name/repository_name
-            # Try account_name/repository_name first
-            matching_repos=$(ghq list | grep "/${target_path}$")
-
-            if [ -z "$matching_repos" ]; then
-                # Try hostname/account_name
-                matching_repos=$(ghq list | grep "^${target_path}/")
-            fi
-            ;;
-        2)
-            # hostname/account_name/repository_name
-            matching_repos=$(ghq list | grep "^${target_path}$")
-            ;;
-        *)
-            echo "Error: Invalid path format '${target_path}'" >&2
+    if [ -z "$target_path" ]; then
+        # No arguments: try to detect repository from current directory
+        local current_dir
+        current_dir=$(pwd)
+        
+        if [[ "$current_dir" != "$ghq_root"* ]]; then
+            echo "Usage: ghq-info <repository-name|account-name>" >&2
             return 1
-            ;;
-    esac
+        fi
+
+        # Extract repository path from current directory
+        # Remove ghq_root and leading slash
+        local rel_path="${current_dir#"$ghq_root"}"
+        rel_path="${rel_path#/}"
+        
+        # GHQ structure is hostname/account/repo
+        # Extract the first 3 components
+        local host_part="${rel_path%%/*}"
+        local rest="${rel_path#*/}"
+        local account_part="${rest%%/*}"
+        rest="${rest#*/}"
+        local repo_part="${rest%%/*}"
+        
+        local full_repo_path="${host_part}/${account_part}/${repo_part}"
+        
+        # Verify this repository exists in ghq list
+        if ghq list | grep -q "^${full_repo_path}$"; then
+            matching_repos="$full_repo_path"
+        else
+            echo "Error: Current directory does not seem to be a ghq-managed repository" >&2
+            return 1
+        fi
+    else
+        # Count slashes in the target path
+        local slash_count
+        slash_count=$(echo "$target_path" | tr -cd '/' | wc -c | tr -d ' ')
+
+        matching_repos=""
+        case "$slash_count" in
+            0)
+                # Could be: repository_name, account_name, or hostname
+                # Try to find matching repositories
+                matching_repos=$(ghq list | grep "/${target_path}$")
+
+                if [ -z "$matching_repos" ]; then
+                    # Try as account name or hostname
+                    matching_repos=$(ghq list | grep "/${target_path}/")
+                fi
+
+                if [ -z "$matching_repos" ]; then
+                    # Try as hostname
+                    matching_repos=$(ghq list | grep "^${target_path}/")
+                fi
+                ;;
+            1)
+                # Could be: hostname/account_name or account_name/repository_name
+                # Try account_name/repository_name first
+                matching_repos=$(ghq list | grep "/${target_path}$")
+
+                if [ -z "$matching_repos" ]; then
+                    # Try hostname/account_name
+                    matching_repos=$(ghq list | grep "^${target_path}/")
+                fi
+                ;;
+            2)
+                # hostname/account_name/repository_name
+                matching_repos=$(ghq list | grep "^${target_path}$")
+                ;;
+            *)
+                echo "Error: Invalid path format '${target_path}'" >&2
+                return 1
+                ;;
+        esac
+    fi
 
     if [ -z "$matching_repos" ]; then
         echo "Error: No repository found matching '${target_path}'" >&2

@@ -433,8 +433,25 @@ EOF
 
 # ===== ghq-info tests =====
 
-# Test: ghq-info with no arguments fails
-@test "ghq-info with no arguments fails" {
+# Test: ghq-info with no arguments in repository
+@test "ghq-info with no arguments in repository succeeds" {
+    cd "${TEST_GHQ_ROOT}/github.com/garaemon/ghq-utils"
+    run ghq-info
+    [ "$status" -eq 0 ]
+    [[ "$output" =~ garaemon/ghq-utils[[:space:]]+(main|master)[[:space:]]+.*/github.com/garaemon/ghq-utils ]]
+}
+
+# Test: ghq-info with no arguments in subdirectory
+@test "ghq-info with no arguments in subdirectory succeeds" {
+    cd "${TEST_GHQ_ROOT}/github.com/garaemon/ghq-utils/src/utils"
+    run ghq-info
+    [ "$status" -eq 0 ]
+    [[ "$output" =~ garaemon/ghq-utils[[:space:]]+(main|master)[[:space:]]+.*/github.com/garaemon/ghq-utils ]]
+}
+
+# Test: ghq-info with no arguments outside GHQ_ROOT fails
+@test "ghq-info with no arguments outside GHQ_ROOT fails" {
+    cd /tmp
     run ghq-info
     [ "$status" -eq 1 ]
     [[ "$output" == *"Usage: ghq-info"* ]]
