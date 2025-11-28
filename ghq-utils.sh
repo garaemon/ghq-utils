@@ -658,7 +658,6 @@ ghq-info() {
     local ghq_root
     local matching_repos
     local repo_count
-    local exit_code=0
 
     # Remove trailing slash from target_path if present
     target_path="${target_path%/}"
