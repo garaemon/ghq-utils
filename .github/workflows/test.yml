@@ -22,7 +22,7 @@ jobs:
 
     - name: Install BATS
       run: |
-        sudo apt-get install -y bats
+        sudo apt-get install -y bats bsdmainutils
 
     - name: Run BATS tests
       run: bats test_ghq_utils.bats

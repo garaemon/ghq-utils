@@ -4,6 +4,21 @@
 
 ## Installation
 
+### Prerequisites
+
+The `ghq-info` command uses the `column` utility for aligning its output. This utility is usually provided by the `bsdmainutils` package on Debian/Ubuntu-based systems or `util-linux` on other Linux distributions.
+
+To ensure `column` is available, you may need to install it:
+
+```shell
+# On Debian/Ubuntu
+sudo apt-get install -y bsdmainutils
+
+# On other Linux distributions (e.g., Fedora, CentOS)
+# sudo dnf install -y util-linux    # For Fedora
+# sudo yum install -y util-linux    # For CentOS/RHEL
+```
+
 Setting up `ghq-utils` is straightforward. You only need to source `ghq-utils.sh` from your shell.
 
 ```shell
@@ -339,6 +354,91 @@ ghq-pull
 # Update all repositories from a specific organization
 ghq-pull github.com/organization-name
 ```
+
+## `ghq-info`
+
+### Overview
+
+`ghq-info` displays information about repositories managed by `ghq`, including their account, name,
+current branch, and full path. This is useful for quickly checking the status of repositories or
+using the output in other scripts.
+
+### Quick Start
+
+```shell
+# Show info for all repositories
+ghq-info
+
+# Show info for specific repository
+ghq-info ghq-utils
+```
+
+### Detailed Usage
+
+#### Show Info for All Repositories
+
+```shell
+ghq-info
+```
+
+When run without arguments, `ghq-info` displays details for all repositories managed by `ghq`.
+
+**Example:**
+```shell
+ghq-info
+# Output:
+# garaemon/ghq-utils  main    a1b2c3d  /home/user/ghq/github.com/garaemon/ghq-utils
+# garaemon/dotfiles   master  e5f6g7h  /home/user/ghq/github.com/garaemon/dotfiles
+# ...
+```
+
+#### Show Info for Specific Repository
+
+```shell
+ghq-info <REPOSITORY-NAME>
+ghq-info <ACCOUNT-NAME>/<REPOSITORY-NAME>
+ghq-info <HOSTNAME>/<ACCOUNT-NAME>/<REPOSITORY-NAME>
+```
+
+Displays information for the specified repository. If multiple repositories match the name, all
+matches are listed.
+
+**Examples:**
+```shell
+ghq-info ghq-utils
+# Output: garaemon/ghq-utils  main  a1b2c3d  /home/user/ghq/github.com/garaemon/ghq-utils
+
+ghq-info garaemon/ghq-utils
+# Output: garaemon/ghq-utils  main  a1b2c3d  /home/user/ghq/github.com/garaemon/ghq-utils
+```
+
+#### Show Info for All Repositories in an Account
+
+```shell
+ghq-info <ACCOUNT-NAME>
+```
+
+Lists information for all repositories belonging to the specified account.
+
+**Example:**
+```shell
+ghq-info garaemon
+# Output:
+# garaemon/ghq-utils  main    a1b2c3d  /home/user/ghq/github.com/garaemon/ghq-utils
+# garaemon/dotfiles   master  e5f6g7h  /home/user/ghq/github.com/garaemon/dotfiles
+```
+
+### Output Format
+
+The output format is:
+```
+account_name/repository_name branch_name commit_hash full_path
+```
+
+- **account_name/repository_name**: The repository identifier.
+- **branch_name**: The current checked-out branch (or "unknown" / "not-a-git-repo").
+- **commit_hash**: The short hash of the current HEAD commit.
+- **full_path**: The absolute path to the repository.
 
 ## Development
 
