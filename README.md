@@ -4,6 +4,21 @@
 
 ## Installation
 
+### Prerequisites
+
+The `ghq-info` command uses the `column` utility for aligning its output. This utility is usually provided by the `bsdmainutils` package on Debian/Ubuntu-based systems or `util-linux` on other Linux distributions.
+
+To ensure `column` is available, you may need to install it:
+
+```shell
+# On Debian/Ubuntu
+sudo apt-get install -y bsdmainutils
+
+# On other Linux distributions (e.g., Fedora, CentOS)
+# sudo dnf install -y util-linux    # For Fedora
+# sudo yum install -y util-linux    # For CentOS/RHEL
+```
+
 Setting up `ghq-utils` is straightforward. You only need to source `ghq-utils.sh` from your shell.
 
 ```shell
