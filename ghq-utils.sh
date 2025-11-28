@@ -723,6 +723,7 @@ ghq-info() {
     while IFS= read -r repo; do
         local repo_path="${ghq_root}/${repo}"
         local branch_name="unknown"
+        local commit_hash="unknown"
 
         # Determine account/repo part for display
         # repo string is like "github.com/account/repo"
@@ -731,14 +732,19 @@ ghq-info() {
 
         if [ -d "$repo_path" ] && [ -d "${repo_path}/.git" ]; then
             branch_name=$(cd "$repo_path" && git rev-parse --abbrev-ref HEAD 2>/dev/null)
+            commit_hash=$(cd "$repo_path" && git rev-parse --short HEAD 2>/dev/null)
             if [ -z "$branch_name" ]; then
                 branch_name="unknown"
             fi
+            if [ -z "$commit_hash" ]; then
+                commit_hash="unknown"
+            fi
         else
             branch_name="not-a-git-repo"
+            commit_hash="-"
         fi
 
-        printf "%s\t%s\t%s\n" "${display_name}" "${branch_name}" "${repo_path}"
+        printf "%s\t%s\t%s\t%s\n" "${display_name}" "${branch_name}" "${commit_hash}" "${repo_path}"
     done <<< "$matching_repos" | column -t -s $'\t'
 
     return 0

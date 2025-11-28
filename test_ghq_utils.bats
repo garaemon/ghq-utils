@@ -438,43 +438,43 @@ EOF
     run ghq-info
     [ "$status" -eq 0 ]
     # Should contain all repositories
-    [[ "$output" =~ garaemon/ghq-utils[[:space:]]+(main|master)[[:space:]]+.*/github.com/garaemon/ghq-utils ]]
-    [[ "$output" =~ garaemon/dotfiles[[:space:]]+(main|master)[[:space:]]+.*/github.com/garaemon/dotfiles ]]
-    [[ "$output" =~ user1/ghq-utils[[:space:]]+(main|master)[[:space:]]+.*/github.com/user1/ghq-utils ]]
-    [[ "$output" =~ garaemon/project1[[:space:]]+(main|master)[[:space:]]+.*/gitlab.com/garaemon/project1 ]]
+    [[ "$output" =~ garaemon/ghq-utils[[:space:]]+(main|master)[[:space:]]+[a-f0-9]+[[:space:]]+.*/github.com/garaemon/ghq-utils ]]
+    [[ "$output" =~ garaemon/dotfiles[[:space:]]+(main|master)[[:space:]]+[a-f0-9]+[[:space:]]+.*/github.com/garaemon/dotfiles ]]
+    [[ "$output" =~ user1/ghq-utils[[:space:]]+(main|master)[[:space:]]+[a-f0-9]+[[:space:]]+.*/github.com/user1/ghq-utils ]]
+    [[ "$output" =~ garaemon/project1[[:space:]]+(main|master)[[:space:]]+[a-f0-9]+[[:space:]]+.*/gitlab.com/garaemon/project1 ]]
 }
 
 # Test: ghq-info with unique repository name
 @test "ghq-info with unique repository name succeeds" {
     run ghq-info dotfiles
     [ "$status" -eq 0 ]
-    # Check output format: account/repo branch path
-    # We expect: garaemon/dotfiles <branch> .../github.com/garaemon/dotfiles
-    [[ "$output" =~ garaemon/dotfiles[[:space:]]+(main|master)[[:space:]]+.*/github.com/garaemon/dotfiles ]]
+    # Check output format: account/repo branch commit_hash path
+    # We expect: garaemon/dotfiles <branch> <hash> .../github.com/garaemon/dotfiles
+    [[ "$output" =~ garaemon/dotfiles[[:space:]]+(main|master)[[:space:]]+[a-f0-9]+[[:space:]]+.*/github.com/garaemon/dotfiles ]]
 }
 
 # Test: ghq-info with ambiguous repository name lists all
 @test "ghq-info with ambiguous repository name lists all" {
     run ghq-info ghq-utils
     [ "$status" -eq 0 ]
-    [[ "$output" =~ garaemon/ghq-utils[[:space:]]+(main|master)[[:space:]]+.*/github.com/garaemon/ghq-utils ]]
-    [[ "$output" =~ user1/ghq-utils[[:space:]]+(main|master)[[:space:]]+.*/github.com/user1/ghq-utils ]]
+    [[ "$output" =~ garaemon/ghq-utils[[:space:]]+(main|master)[[:space:]]+[a-f0-9]+[[:space:]]+.*/github.com/garaemon/ghq-utils ]]
+    [[ "$output" =~ user1/ghq-utils[[:space:]]+(main|master)[[:space:]]+[a-f0-9]+[[:space:]]+.*/github.com/user1/ghq-utils ]]
 }
 
 # Test: ghq-info with account name lists all repos in account
 @test "ghq-info with account name lists all repos in account" {
     run ghq-info garaemon
     [ "$status" -eq 0 ]
-    [[ "$output" =~ garaemon/ghq-utils[[:space:]]+(main|master)[[:space:]]+.*/github.com/garaemon/ghq-utils ]]
-    [[ "$output" =~ garaemon/dotfiles[[:space:]]+(main|master)[[:space:]]+.*/github.com/garaemon/dotfiles ]]
-    [[ "$output" =~ garaemon/project1[[:space:]]+(main|master)[[:space:]]+.*/gitlab.com/garaemon/project1 ]]
+    [[ "$output" =~ garaemon/ghq-utils[[:space:]]+(main|master)[[:space:]]+[a-f0-9]+[[:space:]]+.*/github.com/garaemon/ghq-utils ]]
+    [[ "$output" =~ garaemon/dotfiles[[:space:]]+(main|master)[[:space:]]+[a-f0-9]+[[:space:]]+.*/github.com/garaemon/dotfiles ]]
+    [[ "$output" =~ garaemon/project1[[:space:]]+(main|master)[[:space:]]+[a-f0-9]+[[:space:]]+.*/gitlab.com/garaemon/project1 ]]
 }
 
 # Test: ghq-info with account/repository format
 @test "ghq-info with account/repository format succeeds" {
     run ghq-info garaemon/ghq-utils
     [ "$status" -eq 0 ]
-    [[ "$output" =~ garaemon/ghq-utils[[:space:]]+(main|master)[[:space:]]+.*/github.com/garaemon/ghq-utils ]]
+    [[ "$output" =~ garaemon/ghq-utils[[:space:]]+(main|master)[[:space:]]+[a-f0-9]+[[:space:]]+.*/github.com/garaemon/ghq-utils ]]
     # Should not match user1/ghq-utils
     [[ ! "$output" =~ user1/ghq-utils ]]
 }
@@ -483,7 +483,7 @@ EOF
 @test "ghq-info with full path format succeeds" {
     run ghq-info github.com/garaemon/ghq-utils
     [ "$status" -eq 0 ]
-    [[ "$output" =~ garaemon/ghq-utils[[:space:]]+(main|master)[[:space:]]+.*/github.com/garaemon/ghq-utils ]]
+    [[ "$output" =~ garaemon/ghq-utils[[:space:]]+(main|master)[[:space:]]+[a-f0-9]+[[:space:]]+.*/github.com/garaemon/ghq-utils ]]
 }
 
 # Test: ghq-info with non-existent repository fails
@@ -513,7 +513,7 @@ EOF
 
     run ghq-info nongit
     [ "$status" -eq 0 ]
-    [[ "$output" =~ test/nongit[[:space:]]+not-a-git-repo[[:space:]]+.*/github.com/test/nongit ]]
+    [[ "$output" =~ test/nongit[[:space:]]+not-a-git-repo[[:space:]]+-[[:space:]]+.*/github.com/test/nongit ]]
 }
 
 # Test: _ghq_info_get_candidates generates candidates without --all

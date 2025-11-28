@@ -372,8 +372,8 @@ When run without arguments, `ghq-info` displays details for all repositories man
 ```shell
 ghq-info
 # Output:
-# garaemon/ghq-utils  main    /home/user/ghq/github.com/garaemon/ghq-utils
-# garaemon/dotfiles   master  /home/user/ghq/github.com/garaemon/dotfiles
+# garaemon/ghq-utils  main    a1b2c3d  /home/user/ghq/github.com/garaemon/ghq-utils
+# garaemon/dotfiles   master  e5f6g7h  /home/user/ghq/github.com/garaemon/dotfiles
 # ...
 ```
 
@@ -391,10 +391,10 @@ matches are listed.
 **Examples:**
 ```shell
 ghq-info ghq-utils
-# Output: garaemon/ghq-utils  main  /home/user/ghq/github.com/garaemon/ghq-utils
+# Output: garaemon/ghq-utils  main  a1b2c3d  /home/user/ghq/github.com/garaemon/ghq-utils
 
 ghq-info garaemon/ghq-utils
-# Output: garaemon/ghq-utils  main  /home/user/ghq/github.com/garaemon/ghq-utils
+# Output: garaemon/ghq-utils  main  a1b2c3d  /home/user/ghq/github.com/garaemon/ghq-utils
 ```
 
 #### Show Info for All Repositories in an Account
@@ -409,19 +409,20 @@ Lists information for all repositories belonging to the specified account.
 ```shell
 ghq-info garaemon
 # Output:
-# garaemon/ghq-utils  main    /home/user/ghq/github.com/garaemon/ghq-utils
-# garaemon/dotfiles   master  /home/user/ghq/github.com/garaemon/dotfiles
+# garaemon/ghq-utils  main    a1b2c3d  /home/user/ghq/github.com/garaemon/ghq-utils
+# garaemon/dotfiles   master  e5f6g7h  /home/user/ghq/github.com/garaemon/dotfiles
 ```
 
 ### Output Format
 
 The output format is:
 ```
-account_name/repository_name branch_name full_path
+account_name/repository_name branch_name commit_hash full_path
 ```
 
 - **account_name/repository_name**: The repository identifier.
 - **branch_name**: The current checked-out branch (or "unknown" / "not-a-git-repo").
+- **commit_hash**: The short hash of the current HEAD commit.
 - **full_path**: The absolute path to the repository.
 
 ## Development
