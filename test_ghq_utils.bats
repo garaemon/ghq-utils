@@ -433,28 +433,15 @@ EOF
 
 # ===== ghq-info tests =====
 
-# Test: ghq-info with no arguments in repository
-@test "ghq-info with no arguments in repository succeeds" {
-    cd "${TEST_GHQ_ROOT}/github.com/garaemon/ghq-utils"
+# Test: ghq-info with no arguments lists all repositories
+@test "ghq-info with no arguments lists all repositories" {
     run ghq-info
     [ "$status" -eq 0 ]
+    # Should contain all repositories
     [[ "$output" =~ garaemon/ghq-utils[[:space:]]+(main|master)[[:space:]]+.*/github.com/garaemon/ghq-utils ]]
-}
-
-# Test: ghq-info with no arguments in subdirectory
-@test "ghq-info with no arguments in subdirectory succeeds" {
-    cd "${TEST_GHQ_ROOT}/github.com/garaemon/ghq-utils/src/utils"
-    run ghq-info
-    [ "$status" -eq 0 ]
-    [[ "$output" =~ garaemon/ghq-utils[[:space:]]+(main|master)[[:space:]]+.*/github.com/garaemon/ghq-utils ]]
-}
-
-# Test: ghq-info with no arguments outside GHQ_ROOT fails
-@test "ghq-info with no arguments outside GHQ_ROOT fails" {
-    cd /tmp
-    run ghq-info
-    [ "$status" -eq 1 ]
-    [[ "$output" == *"Usage: ghq-info"* ]]
+    [[ "$output" =~ garaemon/dotfiles[[:space:]]+(main|master)[[:space:]]+.*/github.com/garaemon/dotfiles ]]
+    [[ "$output" =~ user1/ghq-utils[[:space:]]+(main|master)[[:space:]]+.*/github.com/user1/ghq-utils ]]
+    [[ "$output" =~ garaemon/project1[[:space:]]+(main|master)[[:space:]]+.*/gitlab.com/garaemon/project1 ]]
 }
 
 # Test: ghq-info with unique repository name

@@ -670,37 +670,8 @@ ghq-info() {
     fi
 
     if [ -z "$target_path" ]; then
-        # No arguments: try to detect repository from current directory
-        local current_dir
-        current_dir=$(pwd)
-        
-        if [[ "$current_dir" != "$ghq_root"* ]]; then
-            echo "Usage: ghq-info <repository-name|account-name>" >&2
-            return 1
-        fi
-
-        # Extract repository path from current directory
-        # Remove ghq_root and leading slash
-        local rel_path="${current_dir#"$ghq_root"}"
-        rel_path="${rel_path#/}"
-        
-        # GHQ structure is hostname/account/repo
-        # Extract the first 3 components
-        local host_part="${rel_path%%/*}"
-        local rest="${rel_path#*/}"
-        local account_part="${rest%%/*}"
-        rest="${rest#*/}"
-        local repo_part="${rest%%/*}"
-        
-        local full_repo_path="${host_part}/${account_part}/${repo_part}"
-        
-        # Verify this repository exists in ghq list
-        if ghq list | grep -q "^${full_repo_path}$"; then
-            matching_repos="$full_repo_path"
-        else
-            echo "Error: Current directory does not seem to be a ghq-managed repository" >&2
-            return 1
-        fi
+        # No arguments: list all repositories
+        matching_repos=$(ghq list)
     else
         # Count slashes in the target path
         local slash_count

@@ -351,7 +351,7 @@ using the output in other scripts.
 ### Quick Start
 
 ```shell
-# Show info for current repository
+# Show info for all repositories
 ghq-info
 
 # Show info for specific repository
@@ -360,20 +360,21 @@ ghq-info ghq-utils
 
 ### Detailed Usage
 
-#### Show Info for Current Repository
+#### Show Info for All Repositories
 
 ```shell
 ghq-info
 ```
 
-When run without arguments from within a `ghq`-managed repository, `ghq-info` displays details for
-that repository.
+When run without arguments, `ghq-info` displays details for all repositories managed by `ghq`.
 
 **Example:**
 ```shell
-cd ~/ghq/github.com/garaemon/ghq-utils
 ghq-info
-# Output: garaemon/ghq-utils main /home/user/ghq/github.com/garaemon/ghq-utils
+# Output:
+# garaemon/ghq-utils main /home/user/ghq/github.com/garaemon/ghq-utils
+# garaemon/dotfiles master /home/user/ghq/github.com/garaemon/dotfiles
+# ...
 ```
 
 #### Show Info for Specific Repository
