@@ -372,8 +372,8 @@ When run without arguments, `ghq-info` displays details for all repositories man
 ```shell
 ghq-info
 # Output:
-# garaemon/ghq-utils main /home/user/ghq/github.com/garaemon/ghq-utils
-# garaemon/dotfiles master /home/user/ghq/github.com/garaemon/dotfiles
+# garaemon/ghq-utils  main    /home/user/ghq/github.com/garaemon/ghq-utils
+# garaemon/dotfiles   master  /home/user/ghq/github.com/garaemon/dotfiles
 # ...
 ```
 
@@ -391,10 +391,10 @@ matches are listed.
 **Examples:**
 ```shell
 ghq-info ghq-utils
-# Output: garaemon/ghq-utils main /home/user/ghq/github.com/garaemon/ghq-utils
+# Output: garaemon/ghq-utils  main  /home/user/ghq/github.com/garaemon/ghq-utils
 
 ghq-info garaemon/ghq-utils
-# Output: garaemon/ghq-utils main /home/user/ghq/github.com/garaemon/ghq-utils
+# Output: garaemon/ghq-utils  main  /home/user/ghq/github.com/garaemon/ghq-utils
 ```
 
 #### Show Info for All Repositories in an Account
@@ -409,8 +409,8 @@ Lists information for all repositories belonging to the specified account.
 ```shell
 ghq-info garaemon
 # Output:
-# garaemon/ghq-utils main /home/user/ghq/github.com/garaemon/ghq-utils
-# garaemon/dotfiles master /home/user/ghq/github.com/garaemon/dotfiles
+# garaemon/ghq-utils  main    /home/user/ghq/github.com/garaemon/ghq-utils
+# garaemon/dotfiles   master  /home/user/ghq/github.com/garaemon/dotfiles
 ```
 
 ### Output Format

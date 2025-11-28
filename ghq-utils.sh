@@ -738,8 +738,8 @@ ghq-info() {
             branch_name="not-a-git-repo"
         fi
 
-        echo "${display_name} ${branch_name} ${repo_path}"
-    done <<< "$matching_repos"
+        printf "%s\t%s\t%s\n" "${display_name}" "${branch_name}" "${repo_path}"
+    done <<< "$matching_repos" | column -t -s $'\t'
 
     return 0
 }
